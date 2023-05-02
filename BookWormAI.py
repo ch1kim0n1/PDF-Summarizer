@@ -26,11 +26,19 @@ class App(QWidget):
         # Create the output label
         self.output_label = QTextEdit(self)
         self.output_label.setGeometry(20, 70, 560, 300)
-        #self.output_label.setTextColor(Qt.red)
 
         # Create the error label
         self.error_label = QLabel(self)
         self.error_label.setGeometry(20, 380, 560, 20)
+
+        # Create the text box
+        self.text_box = QTextEdit(self)
+        self.text_box.setGeometry(20, 420, 560, 200)
+        self.text_box.setReadOnly(True)
+
+        # Create the text label for the name of the PDF file
+        self.pdf_name_label = QLabel(self)
+        self.pdf_name_label.setGeometry(20, 200, 560, 20)
 
     def upload_pdf(self):
         # Get the file name
@@ -52,24 +60,32 @@ class App(QWidget):
         # Set the URL input field to the selected file path
         self.url_input.setText(filename)
 
-        # Analyze the PDF file
-        self.analyze_pdf(pdf_text)
+        # Display the content of the PDF file in the text box
+        self.text_box.setText(pdf_text)
 
-    def analyze_pdf(self, pdf_text):
+        # Output the name of the PDF file
+        self.pdf_name_label.setText("PDF File Name: {}".format(filename))
+
+        # Print out "PDF is uploaded successfully"
+        self.output_label.insertHtml("<p style='color:red;'>PDF is uploaded successfully</p>")
+
+        # Convert PDF to TXT file
+        with open(filename[:-4] + ".txt", "w") as f:
+            f.write(self.text_box.toPlainText())
+
+    def analyze_pdf(self):
         # Create a list of sentences
-        sentences = nltk.sent_tokenize(pdf_text)
+        sentences = nltk.sent_tokenize(self.text_box.toPlainText())
 
         # Create a list of named entities
         named_entities = nltk.ne_chunk(sentences)
 
-        # Print the named entities
-        entities_str = ""
-        for entity in named_entities:
-            entities_str += str(entity) + "\n"
-        self.output_label.setText(entities_str)
+        # Summarize the PDF file
+        summarizer = transformers.pipeline("summarization", model="t5-base", tokenizer="t5-base", framework="tf")
+        summary = summarizer(self.text_box.toPlainText(), max_length=100)
 
-        # Print out "PDF is uploaded successfully"
-        self.output_label.appendHtml("<p style='color:red;'>PDF is uploaded successfully</p>")
+        # Print the summarized version of the PDF file into the QTextEdit
+        self.output_label.setText(summary)
 
     def run(self):
         self.setGeometry(100, 100, 600, 420)
@@ -82,3 +98,4 @@ if __name__ == "__main__":
     ex = App()
     ex.run()
     sys.exit(app.exec_())
+
