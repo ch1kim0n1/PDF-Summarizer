@@ -1,3 +1,7 @@
+### libraries to install
+1. pip install --user tf-keras
+2. pip install --user transformers
+
 # BookWormAI
 
 Resperatory for the AI that can read books and answer questions accordingly.
