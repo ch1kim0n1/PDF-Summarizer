@@ -4,7 +4,9 @@
 
 # PDF-Summarizer
 
-Resperatory for the Hugging Face's NLP Model that can read books and answer questions accordingly.
+Resperatory for the Hugging Face's NLP Model that can read files and give a sum of it
+
+Next Feature: answer questions about files accordingly.
 
 # Ideas
 * process pdf files and give a responce to a prompt of a user
